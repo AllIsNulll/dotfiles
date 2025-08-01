@@ -53,7 +53,24 @@ return {
         vim.keymap.set("n", "<leader>fi", ":Telescope man_pages<CR>", { desc = "Fuzzy find man pages" })
         vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", { desc = "Fuzzy find buffers" })
         vim.keymap.set("n", "<leader>fm", ":Telescope marks<CR>", { desc = "Fuzzy find vim marks" })
-        vim.keymap.set("n", "<leader>fh", ":Telescope help_tags<CR>", { desc = "Fuzzy find help tags" })
+        vim.keymap.set("n", "<leader>fh", function()
+            builtin.help_tags({
+                attach_mappings = function(bufnr, map)
+                    map("i", "<CR>", function()
+                        local entry = actions_state.get_selected_entry()
+                        actions.close(bufnr)
+                        vim.cmd("tab help " .. entry.value)
+                    end)
+                    map("n", "<CR>", function()
+                        local entry = actions_state.get_selected_entry()
+                        actions.close(bufnr)
+                        vim.cmd("tab help " .. entry.value)
+                    end)
+
+                    return true
+                end,
+            })
+        end, { desc = "Fuzzy find help tags" })
         vim.keymap.set("n", "<leader>fg", ":Telescope git_files<CR>", { desc = "Fuzzy find files tracked by Git" })
         vim.keymap.set("n", "<leader>hf", ":Telescope git_status<CR>", { desc = "Fuzzy find Git Status" })
         vim.keymap.set("n", "<leader>ft", ":TodoTelescope<CR>", { desc = "Fuzzy find todos" })
